@@ -15,4 +15,4 @@ COPY . .
 WORKDIR /app/src
 
 # Run app
-CMD python manage.py migrate && gunicorn mindvoice_project.wsgi:application --bind 0.0.0.0:$PORT
+CMD python manage.py migrate && gunicorn mindvoice_project.wsgi:application --bind 0.0.0.0:$PORT --timeout 300
