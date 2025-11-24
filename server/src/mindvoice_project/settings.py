@@ -159,8 +159,8 @@ AUTH_USER_MODEL = "companion.User"
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "https://safehaven-tau.vercel.app"
-
+    "https://safehaven-tau.vercel.app",
+    "https://safehaven-production-d0de.up.railway.app",
 ]
 
 # Expose custom headers to frontend
