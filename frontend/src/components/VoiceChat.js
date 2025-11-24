@@ -4,7 +4,7 @@ import VoiceSelector from './VoiceSelector';
 import MessageBubble from './MessageBubble';
 import { sendVoiceMessage, sendTextMessage } from '../services/api';
 
-function VoiceChat({ selectedVoice, onVoiceChange }) {
+function VoiceChat({ selectedVoice, onVoiceChange, user }) {
   const [messages, setMessages] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -17,16 +17,32 @@ function VoiceChat({ selectedVoice, onVoiceChange }) {
   const audioChunksRef = useRef([]);
   const messagesEndRef = useRef(null);
   const textareaRef = useRef(null);
+  const audioContextRef = useRef(null);
+
+  // Initialize audio context on first user interaction to enable autoplay
+  const unlockAudio = () => {
+    if (!audioContextRef.current) {
+      try {
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        audioContextRef.current = new AudioContext();
+        audioContextRef.current.resume();
+        console.log('Audio context unlocked for autoplay');
+      } catch (err) {
+        console.log('Audio context creation failed:', err);
+      }
+    }
+  };
 
   useEffect(() => {
     // Welcome message with audio
+    const welcomeName = user?.full_name ? ` ${user.full_name}` : '';
     setMessages([{
       role: 'assistant',
-      text: "Hello! I'm your SafeHaven Companion. I'm here to support your wellness journey. How are you feeling today? If you'd like to change my voice to one that suits you better, just click the settings icon at the top right.",
+      text: `Hello${welcomeName}! I'm your SafeHaven Companion. I'm here to support your wellness journey. How are you feeling today? If you'd like to change my voice to one that suits you better, just click the settings icon at the top right.`,
       audioUrl: '/welcome.mp3',
       timestamp: new Date(),
     }]);
-  }, []);
+  }, [user]);
 
   useEffect(() => {
     // Scroll to bottom on new messages
@@ -35,6 +51,9 @@ function VoiceChat({ selectedVoice, onVoiceChange }) {
 
   const startRecording = async () => {
     try {
+      // Unlock audio on first user interaction
+      unlockAudio();
+      
       // Request microphone permission explicitly
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       
@@ -129,6 +148,9 @@ function VoiceChat({ selectedVoice, onVoiceChange }) {
   const handleSendText = async () => {
     if (!textInput.trim()) return;
 
+    // Unlock audio on user interaction
+    unlockAudio();
+
     setIsProcessing(true);
     setError('');
     setProcessingStatus('SafeHaven is thinking...');
@@ -205,19 +227,40 @@ function VoiceChat({ selectedVoice, onVoiceChange }) {
       <header className="chat-header">
         <div className="header-content">
           <h1>SafeHaven Companion</h1>
-          <p className="tagline">Your wellness journey starts here</p>
+          <p className="tagline">
+            {user?.full_name ? `Welcome, ${user.full_name}` : 'Your wellness journey starts here'}
+          </p>
         </div>
-        <button 
-          className="settings-btn"
-          onClick={() => setShowVoiceSelector(true)}
-          aria-label="Open voice settings"
-          title="Change Voice"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/>
-          </svg>
-        </button>
+        <div className="header-actions">
+          <button 
+            className="settings-btn"
+            onClick={() => setShowVoiceSelector(true)}
+            aria-label="Open voice settings"
+            title="Change Voice"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M12 1v6M12 17v6M4.22 4.22l4.24 4.24M15.54 15.54l4.24 4.24M1 12h6M17 12h6M4.22 19.78l4.24-4.24M15.54 8.46l4.24-4.24"/>
+            </svg>
+          </button>
+          <button 
+            className="logout-btn"
+            onClick={() => {
+              if (window.confirm('Are you sure you want to log out?')) {
+                localStorage.removeItem('auth_token');
+                window.location.reload();
+              }
+            }}
+            aria-label="Logout"
+            title="Logout"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </button>
+        </div>
       </header>
 
       {/* Messages */}

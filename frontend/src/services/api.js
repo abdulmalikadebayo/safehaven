@@ -9,6 +9,31 @@ const api = axios.create({
   },
 });
 
+// Add token to requests if available
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('auth_token');
+  if (token) {
+    config.headers.Authorization = `Token ${token}`;
+  }
+  return config;
+});
+
+// Authentication APIs
+export const register = async (fullName) => {
+  const response = await api.post('/auth/register/', { full_name: fullName });
+  return response.data;
+};
+
+export const login = async (fullName) => {
+  const response = await api.post('/auth/login/', { full_name: fullName });
+  return response.data;
+};
+
+export const getMe = async () => {
+  const response = await api.get('/auth/me/');
+  return response.data;
+};
+
 export const sendVoiceMessage = async (audioBlob, voicePreference = 'tayo') => {
   const formData = new FormData();
   formData.append('audio', audioBlob, 'recording.webm');
@@ -43,13 +68,43 @@ export const sendVoiceMessage = async (audioBlob, voicePreference = 'tayo') => {
       console.log('🔍 DEBUG - Response headers object:', headers);
       console.log('🔍 DEBUG - All header keys:', Object.keys(headers));
       
+      // Check if headers are base64 encoded
+      const isBase64 = headers['x-encoding'] === 'base64';
+      
+      console.log('🔐 Is base64 encoded?', isBase64);
+      console.log('🔐 x-encoding header:', headers['x-encoding']);
+      
+      // Helper function to decode base64 if needed
+      const decodeHeader = (value) => {
+        if (!value) return '';
+        console.log('🔓 Decoding value (first 50 chars):', value.substring(0, 50));
+        if (isBase64) {
+          try {
+            const decoded = atob(value);
+            console.log('✅ Decoded successfully (first 50 chars):', decoded.substring(0, 50));
+            return decoded;
+          } catch (e) {
+            console.error('❌ Failed to decode base64 header:', e);
+            return value;
+          }
+        }
+        console.log('⚠️ Not base64, returning as-is');
+        return value;
+      };
+      
       // Try different case variations
-      const userQuery = headers['x-user-query'] || headers['X-User-Query'] || 
-                        headers['xuserquery'] || headers['XUSERQUERY'] || '';
-      const transcript = headers['x-transcript'] || headers['X-Transcript'] || 
-                         headers['xtranscript'] || headers['XTRANSCRIPT'] || '';
-      const responseText = headers['x-response-text'] || headers['X-Response-Text'] || 
-                           headers['xresponsetext'] || headers['XRESPONSETEXT'] || '';
+      const userQuery = decodeHeader(
+        headers['x-user-query'] || headers['X-User-Query'] || 
+        headers['xuserquery'] || headers['XUSERQUERY'] || ''
+      );
+      const transcript = decodeHeader(
+        headers['x-transcript'] || headers['X-Transcript'] || 
+        headers['xtranscript'] || headers['XTRANSCRIPT'] || ''
+      );
+      const responseText = decodeHeader(
+        headers['x-response-text'] || headers['X-Response-Text'] || 
+        headers['xresponsetext'] || headers['XRESPONSETEXT'] || ''
+      );
       const audioUrl = URL.createObjectURL(response.data);
 
       console.log('📋 Extracted values:', {
@@ -99,9 +154,25 @@ export const sendTextMessage = async (text, voicePreference = 'tayo') => {
       };
     } else {
       // Audio response
-      const userQuery = response.headers['x-user-query'] || response.headers['x-transcript'] || text;
-      const transcript = response.headers['x-transcript'] || text;
-      const responseText = response.headers['x-response-text'] || '';
+      const headers = response.headers;
+      const isBase64 = headers['x-encoding'] === 'base64';
+      
+      const decodeHeader = (value) => {
+        if (!value) return '';
+        if (isBase64) {
+          try {
+            return atob(value);
+          } catch (e) {
+            console.error('Failed to decode base64 header:', e);
+            return value;
+          }
+        }
+        return value;
+      };
+      
+      const userQuery = decodeHeader(headers['x-user-query'] || headers['x-transcript'] || '') || text;
+      const transcript = decodeHeader(headers['x-transcript'] || '') || text;
+      const responseText = decodeHeader(headers['x-response-text'] || '');
       const audioUrl = URL.createObjectURL(response.data);
 
       return {

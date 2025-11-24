@@ -1,3 +1,4 @@
+from django.core.files.base import ContentFile
 from django.http import HttpResponse
 from rest_framework import status
 from rest_framework.response import Response
@@ -7,7 +8,7 @@ from audio_processing.llm_service import LLMService
 from audio_processing.stt_service import STTService
 from audio_processing.tts_service import TTSService
 
-from .models import Session
+from .models import Message, Session
 from .serializers import SessionSerializer, UserSerializer
 
 
@@ -74,43 +75,76 @@ class VoiceInputView(APIView):
                 print(f"⚠️ TTS failed: {tts_error}")
                 print("⚠️ Continuing without audio...")
 
-            # Step 4: Save session log
+            # Step 4: Save messages to database for authenticated users
             if user:
-                Session.objects.create(
+                # Get or create an active session for this user
+                session = (
+                    Session.objects.filter(user=user).order_by("-updated_at").first()
+                )
+                if not session:
+                    session = Session.objects.create(user=user)
+                    print(f"✓ New session created for user: {user.username}")
+                else:
+                    print(f"✓ Using existing session: {session.id}")
+
+                # Save user message
+                user_message = Message.objects.create(
+                    session=session, user=user, role="user", text=transcript
+                )
+                if audio_file:
+                    # Save the uploaded audio
+                    user_message.audio_file.save(
+                        f"user_{user.id}_{user_message.id}.webm",
+                        ContentFile(audio_file.read()),
+                    )
+                    audio_file.seek(0)  # Reset file pointer
+                print(f"✓ User message saved: {user_message.id}")
+
+                # Save assistant message with audio
+                assistant_message = Message.objects.create(
+                    session=session,
                     user=user,
-                    transcript=transcript,
-                    response_text=response_text,
+                    role="assistant",
+                    text=response_text,
                     voice_used=voice_preference,
                 )
-                print(f"✓ Session saved for user: {user.username}")
+                if audio_data:
+                    assistant_message.audio_file.save(
+                        f"assistant_{user.id}_{assistant_message.id}.mp3",
+                        ContentFile(audio_data),
+                    )
+                print(f"✓ Assistant message saved: {assistant_message.id}")
 
             # Return response
             print("\n=== Request Complete ===\n")
             if audio_data:
                 # Return audio response with headers
+                # Note: HTTP headers can't contain newlines, so we encode them
+                import base64
+                
                 response = HttpResponse(audio_data, content_type="audio/mpeg")
                 response["Content-Disposition"] = 'attachment; filename="response.mp3"'
-                response["X-Transcript"] = transcript
-                response["X-Response-Text"] = response_text
-                response["X-User-Query"] = (
-                    transcript  # User's original query (transcribed or typed)
-                )
+                # Encode text with newlines as base64 to safely pass in headers
+                response["X-Transcript"] = base64.b64encode(transcript.encode()).decode()
+                response["X-Response-Text"] = base64.b64encode(response_text.encode()).decode()
+                response["X-User-Query"] = base64.b64encode(transcript.encode()).decode()
+                response["X-Encoding"] = "base64"  # Signal to frontend that values are base64 encoded
                 return response
             else:
                 # Return JSON if TTS failed
-                return Response(
-                    {
-                        "user_query": transcript,  # User's original query
-                        "transcript": transcript,
-                        "response_text": response_text,
-                        "audio_url": None,
-                        "tts_error": tts_error,
-                        "message": "TTS service unavailable. Text response provided.",
-                    }
-                )
+                response_data = {
+                    "user_query": transcript,  # User's original query
+                    "transcript": transcript,
+                    "response_text": response_text,
+                    "audio_url": None,
+                    "tts_error": tts_error,
+                    "message": "TTS service unavailable. Text response provided.",
+                }
+                print(f"Response data: {response_data}")
+                return Response(response_data)
 
         except Exception as e:
-            print(f"\n❌ Error occurred: {str(e)}")
+            print(f"\n Error occurred: {str(e)}")
             import traceback
 
             traceback.print_exc()

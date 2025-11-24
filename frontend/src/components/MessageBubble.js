@@ -14,13 +14,23 @@ function MessageBubble({ message }) {
     timestamp: message.timestamp
   });
 
-  // Autoplay audio for assistant messages
+  // Attempt autoplay for assistant messages (will gracefully fail if not allowed)
   useEffect(() => {
     if (message.audioUrl && message.role === 'assistant' && audioRef.current) {
-      audioRef.current.play().catch(err => {
-        console.log('Autoplay prevented:', err);
-      });
-      setIsPlaying(true);
+      // Small delay to ensure audio is loaded
+      const timer = setTimeout(() => {
+        audioRef.current?.play()
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch(err => {
+            console.log('Autoplay prevented (user must interact first):', err.message);
+            // Don't set isPlaying to true if autoplay fails
+            setIsPlaying(false);
+          });
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
   }, [message.audioUrl, message.role]);
 
