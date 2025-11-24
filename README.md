@@ -2,7 +2,7 @@
 
 A voice-first mental wellness companion that uses AI to provide supportive conversations through natural voice interactions. Built with React frontend and Django backend, integrated with OpenAI Whisper (STT), GPT-4 (LLM), and YarnGPT (TTS with Nigerian accents).
 
-## 🎯 Overview
+## Overview
 
 SafeHaven is an anonymous, voice-based mental wellness tool that allows users to:
 - Record voice messages using natural speech
@@ -11,7 +11,7 @@ SafeHaven is an anonymous, voice-based mental wellness tool that allows users to
 - Track conversation history
 - Use without authentication (Phase 1 MVP)
 
-## 🏗️ Architecture
+## Architecture
 
 ```
 safehaven/
@@ -28,7 +28,7 @@ safehaven/
         └── mindvoice_project/  # Django settings
 ```
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 - **Framework**: React 18
@@ -51,7 +51,7 @@ safehaven/
 - **Code Formatting**: Black, isort, autoflake (Python)
 - **Process Management**: Make commands
 
-## 🚀 Setup Instructions
+## Setup Instructions
 
 ### Prerequisites
 - Node.js 16+ and npm
@@ -79,7 +79,7 @@ DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
 OPENAI_API_KEY=your-openai-api-key
 YARNGPT_API_KEY=your-yarngpt-api-key
-YARNGPT_BASE_URL=https://api.yarngpt.com/v1
+YARNGPT_BASE_URL=https://yarngpt.ai/api/v1/tts
 ```
 
 4. Generate Django secret key:
@@ -122,7 +122,7 @@ npm start
 ```
 Frontend runs at: http://localhost:3000
 
-## 📱 Usage
+## Usage
 
 1. Open http://localhost:3000 in your browser
 2. Click the microphone button to start recording
@@ -132,7 +132,7 @@ Frontend runs at: http://localhost:3000
 6. Click play to listen to the AI response
 7. Click settings (⚙️) to change voice preference
 
-## 🎤 Available Voices
+## Available Voices
 
 16 Nigerian-accented voices from YarnGPT:
 - **Tayo** - Upbeat, energetic (default)
@@ -160,7 +160,7 @@ Update user preferences (future authentication)
 ### `GET /api/sessions/`
 Retrieve conversation history (future authentication)
 
-## 🧪 Development Commands
+## Development Commands
 
 ### Backend (from `server/` directory)
 ```bash
@@ -181,7 +181,7 @@ npm run build           # Build for production
 npm test                # Run tests
 ```
 
-## 📊 Database Models
+## Database Models
 
 ### User
 - Authentication fields (username, email, password)
@@ -196,7 +196,7 @@ npm test                # Run tests
 - `response_text`: LLM output (AI response)
 - `voice_used`: TTS voice used for response
 
-## ✅ Phase 1 Status (Complete)
+## Phase 1 Status (Complete)
 
 - [x] Frontend voice recording interface
 - [x] Backend API with STT, LLM, TTS pipeline
@@ -208,7 +208,7 @@ npm test                # Run tests
 - [x] CORS configuration
 - [x] Mobile-responsive design
 
-## 🔜 Roadmap (Phase 2+)
+## Roadmap (Phase 2+)
 
 - [ ] User authentication
 - [ ] Micro-habit library and suggestions
@@ -220,7 +220,7 @@ npm test                # Run tests
 - [ ] Voice activity detection
 - [ ] Conversation analytics
 
-## 🔐 Environment Variables
+## Environment Variables
 
 ### Backend `.env`
 ```env
@@ -237,7 +237,7 @@ YARNGPT_BASE_URL=        # YarnGPT endpoint
 REACT_APP_API_URL=       # Backend API URL (default: http://localhost:8001/api)
 ```
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
 2. Create a feature branch
@@ -246,11 +246,11 @@ REACT_APP_API_URL=       # Backend API URL (default: http://localhost:8001/api)
 5. Test thoroughly
 6. Submit a pull request
 
-## 📄 License
+## License
 
 This project is private and proprietary.
 
-## 👥 Team
+## Team
 
 Built with care for mental wellness support.
 
