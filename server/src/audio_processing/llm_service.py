@@ -9,7 +9,7 @@ class LLMService:
     def __init__(self):
         self.client = OpenAI(
             api_key=os.getenv("OPENAI_API_KEY"),
-            timeout=60.0,  # 60 second timeout
+            timeout=1800,  # 1800 second timeout
             max_retries=2,  # Retry failed requests up to 2 times
         )
         self.system_prompt = """You are SafeHaven Companion, a voice-first wellbeing and reflection partner with a calm, warm presence and a touch of Nigerian relatability.
