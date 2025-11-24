@@ -19,16 +19,21 @@ function MessageBubble({ message }) {
     if (message.audioUrl && message.role === 'assistant' && audioRef.current) {
       // Small delay to ensure audio is loaded
       const timer = setTimeout(() => {
-        audioRef.current?.play()
-          .then(() => {
-            setIsPlaying(true);
-          })
-          .catch(err => {
-            console.log('Autoplay prevented (user must interact first):', err.message);
-            // Don't set isPlaying to true if autoplay fails
-            setIsPlaying(false);
-          });
-      }, 100);
+        // Try to play audio
+        const playPromise = audioRef.current?.play();
+        
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log('✅ Audio autoplay successful');
+              setIsPlaying(true);
+            })
+            .catch(err => {
+              console.log('⚠️ Autoplay prevented on mobile - user must tap play:', err.message);
+              setIsPlaying(false);
+            });
+        }
+      }, 200);
       
       return () => clearTimeout(timer);
     }

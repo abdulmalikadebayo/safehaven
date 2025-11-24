@@ -80,10 +80,10 @@ function NameInput({ onSubmit }) {
             {isLoading ? 'Please wait...' : 'Continue'}
           </button>
         </form>
-
-        <p className="privacy-note">
-          <span>🔒</span> Your conversations are private and secure
-        </p>
+        
+        <div className="powered-by">
+          Powered by <strong>YarnGPT</strong> • Showcasing Nigerian-accent TTS
+        </div>
       </div>
     </motion.div>
   );
