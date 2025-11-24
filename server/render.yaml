@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: safehaven-backend
+    runtime: python
+    buildCommand: "./build.sh"
+    startCommand: "cd src && pipenv run gunicorn mindvoice_project.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: False
+      - key: DATABASE_URL
+        fromDatabase:
+          name: safehaven-db
+          property: connectionString
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: YARNGPT_API_KEY
+        sync: false
+      - key: YARNGPT_API_URL
+        value: https://yarngpt.ai/api/v1/tts
+
+databases:
+  - name: safehaven-db
+    databaseName: safehaven
+    user: safehaven
