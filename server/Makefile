@@ -1,5 +1,9 @@
 export PIPENV_VERBOSITY=-1
-OS := $(shell uname -s 2>/dev/null || echo not)
+ifeq ($(OS),Windows_NT)
+    DETECTED_OS := Windows
+else
+    DETECTED_OS := $(shell uname -s 2>/dev/null || echo Unknown)
+endif
 
 .PHONY: setup
 setup:
@@ -21,9 +25,11 @@ generate-secret-key:
 
 .PHONY: superuser
 superuser:
-	DJANGO_SUPERUSER_PASSWORD=admin pipenv run python src/manage.py createsuperuser --no-input \
-		--username admin \
-		--email admin@admin.com
+ifeq ($(DETECTED_OS),Windows)
+	powershell -Command "$$env:DJANGO_SUPERUSER_PASSWORD='admin'; pipenv run python src/manage.py createsuperuser --no-input --username admin --email admin@admin.com"
+else
+	DJANGO_SUPERUSER_PASSWORD=admin pipenv run python src/manage.py createsuperuser --no-input --username admin --email admin@admin.com
+endif
 
 .PHONY: migrate
 migrate: 
