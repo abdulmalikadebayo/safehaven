@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import VoiceInputView, UserProfileView, SessionHistoryView
+
+from .views import SessionHistoryView, UserProfileView, VoiceInputView
 
 urlpatterns = [
-    path('voice_input/', VoiceInputView.as_view(), name='voice_input'),
-    path('profile/', UserProfileView.as_view(), name='user_profile'),
-    path('sessions/', SessionHistoryView.as_view(), name='session_history'),
+    path("voice_input/", VoiceInputView.as_view(), name="voice_input"),
+    path("profile/", UserProfileView.as_view(), name="user_profile"),
+    path("sessions/", SessionHistoryView.as_view(), name="session_history"),
 ]

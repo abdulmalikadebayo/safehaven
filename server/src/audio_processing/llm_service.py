@@ -1,12 +1,13 @@
 import os
+
 from openai import OpenAI
 
 
 class LLMService:
     """LLM service using OpenAI GPT-4"""
-    
+
     def __init__(self):
-        self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.system_prompt = """You are **MindVoice Companion**, a voice-first well-being and reflection partner with a touch of Naija-warmth and care.  
 Your purpose: help the user feel heard, explore what's going on inside, and gently guide towards feeling a little better. You are *not* a therapist, doctor, HR/legal advisor, or replacement for human professional care.
 
@@ -102,33 +103,30 @@ Keep sentences short, one question only.
 - User asks for quick fix or "happy pills": remind: "Reflection takes time; small steps count too."  
 - If system hallucination risk: never present unverified fact; if unsure: "I don't have that information…"
 """
-    
+
     def get_response(self, user_input, conversation_history=None):
         """
         Get LLM response for user input
-        
+
         Args:
             user_input: User's message
             conversation_history: List of previous messages (optional)
-            
+
         Returns:
             str: LLM response text
         """
         try:
             messages = [{"role": "system", "content": self.system_prompt}]
-            
+
             if conversation_history:
                 messages.extend(conversation_history)
-            
+
             messages.append({"role": "user", "content": user_input})
-            
+
             response = self.client.chat.completions.create(
-                model="gpt-4",
-                messages=messages,
-                temperature=0.7,
-                max_tokens=150
+                model="gpt-4", messages=messages, temperature=0.7, max_tokens=150
             )
-            
+
             return response.choices[0].message.content
         except Exception as e:
             raise Exception(f"LLM error: {str(e)}")
