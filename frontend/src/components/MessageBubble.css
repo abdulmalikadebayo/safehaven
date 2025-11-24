@@ -1,0 +1,238 @@
+/* Message Container */
+.message {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+  animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 100%;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message.user {
+  align-items: flex-end;
+}
+
+.message.assistant {
+  align-items: flex-start;
+}
+
+/* Message Label */
+.message-label {
+  font-size: 0.7rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+  padding: 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.8;
+}
+
+.message.user .message-label {
+  color: #60a5fa;
+  text-align: right;
+}
+
+.message.assistant .message-label {
+  color: #8b5cf6;
+  text-align: left;
+}
+
+/* Message Content */
+.message-content {
+  max-width: 70%;
+  padding: 16px 20px;
+  border-radius: 18px;
+  word-wrap: break-word;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+}
+
+.message.user .message-content {
+  background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+  color: white;
+  border-bottom-right-radius: 6px;
+}
+
+.message.assistant .message-content {
+  background: white;
+  color: #1f2937;
+  border-bottom-left-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.message-content p {
+  margin: 0;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+}
+
+.message-time {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  margin-top: 6px;
+  padding: 0 8px;
+  font-weight: 500;
+}
+
+/* Audio Player */
+.audio-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 10px 14px;
+  background: rgba(99, 102, 241, 0.08);
+  border-radius: 14px;
+  max-width: 70%;
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+.message.user .audio-player {
+  align-self: flex-end;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.message.assistant .audio-player {
+  align-self: flex-start;
+}
+
+.play-btn {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.25);
+  flex-shrink: 0;
+}
+
+.message.user .play-btn {
+  background: white;
+  color: #3b82f6;
+}
+
+.play-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.35);
+}
+
+.play-btn:active {
+  transform: scale(0.98);
+}
+
+/* Audio Waveform */
+.audio-waveform {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 24px;
+  flex: 1;
+}
+
+.audio-waveform span {
+  width: 3px;
+  height: 12px;
+  background: #cbd5e0;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.message.assistant .audio-waveform span.playing {
+  background: #6366f1;
+  animation: waveform 1.2s ease-in-out infinite;
+}
+
+.message.user .audio-waveform span {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.message.user .audio-waveform span.playing {
+  background: white;
+  animation: waveform 1.2s ease-in-out infinite;
+}
+
+.audio-waveform span:nth-child(1).playing {
+  animation-delay: 0s;
+}
+
+.audio-waveform span:nth-child(2).playing {
+  animation-delay: 0.1s;
+}
+
+.audio-waveform span:nth-child(3).playing {
+  animation-delay: 0.2s;
+}
+
+.audio-waveform span:nth-child(4).playing {
+  animation-delay: 0.3s;
+}
+
+.audio-waveform span:nth-child(5).playing {
+  animation-delay: 0.4s;
+}
+
+@keyframes waveform {
+  0%, 100% {
+    height: 12px;
+  }
+  50% {
+    height: 24px;
+  }
+}
+
+.audio-label {
+  font-size: 0.8rem;
+  color: #6366f1;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.message.user .audio-label {
+  color: white;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .message-content {
+    max-width: 85%;
+    padding: 12px 16px;
+  }
+
+  .message-content p {
+    font-size: 0.9rem;
+  }
+
+  .audio-player {
+    gap: 10px;
+    padding: 9px 12px;
+  }
+
+  .play-btn {
+    width: 34px;
+    height: 34px;
+  }
+
+  .audio-label {
+    font-size: 0.8rem;
+  }
+}
+
+
