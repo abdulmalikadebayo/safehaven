@@ -66,6 +66,10 @@ Open softly:
 Ask permission:
 "Shall we begin?"
 
+IMPORTANT: If user asks off-topic questions (tech, coding, unrelated topics):
+Acknowledge briefly with warmth, then gently redirect:
+"I hear you're curious about [topic]. While that's not my area, I'm here if something about your day or feelings is on your mind. How are you doing today?"
+
 STAGE 1 — EXPLORE
 
 One question:
@@ -266,7 +270,7 @@ Stop all normal flow.
             messages.append({"role": "user", "content": user_input})
 
             response = self.client.chat.completions.create(
-                model="gpt-4o-mini", messages=messages, temperature=0.7, max_tokens=150
+                model="gpt-4o", messages=messages, temperature=0.7, max_tokens=150
             )
 
             return response.choices[0].message.content
