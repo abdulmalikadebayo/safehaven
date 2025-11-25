@@ -40,14 +40,8 @@ function App() {
 
   const handleNameSubmit = async (fullName) => {
     try {
-      // Try to login first
-      let response;
-      try {
-        response = await login(fullName);
-      } catch (loginError) {
-        // If login fails, register new user
-        response = await register(fullName);
-      }
+      // Register user (creates new user or returns existing)
+      const response = await register(fullName);
 
       // Save token and user data
       localStorage.setItem('auth_token', response.token);
