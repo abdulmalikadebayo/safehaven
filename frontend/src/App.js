@@ -5,7 +5,7 @@ import NameInput from './components/NameInput';
 import { register, login, getMe } from './services/api';
 
 function App() {
-  const [selectedVoice, setSelectedVoice] = useState('tayo');
+  const [selectedVoice, setSelectedVoice] = useState('Chinenye');
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 

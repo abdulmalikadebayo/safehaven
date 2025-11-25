@@ -11,7 +11,7 @@ class TTSService:
         self.api_url = os.getenv("YARNGPT_API_URL", "https://yarngpt.ai/api/v1/tts")
         print(f"TTS Service initialized with URL: {self.api_url}")
 
-    def synthesize(self, text, voice="tayo"):
+    def synthesize(self, text, voice="Chinenye"):
         """
         Convert text to speech using YarnGPT
 

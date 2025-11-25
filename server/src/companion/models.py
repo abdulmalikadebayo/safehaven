@@ -6,27 +6,27 @@ class User(AbstractUser):
     """User model with voice preferences"""
 
     VOICE_CHOICES = [
-        ("idera", "Idera - Melodic, gentle"),
-        ("emma", "Emma - Authoritative, deep"),
-        ("zainab", "Zainab - Soothing, gentle"),
-        ("osagie", "Osagie - Smooth, calm"),
-        ("wura", "Wura - Young, sweet"),
-        ("jude", "Jude - Warm, confident"),
-        ("chinenye", "Chinenye - Engaging, warm"),
-        ("tayo", "Tayo - Upbeat, energetic"),
-        ("regina", "Regina - Mature, warm"),
-        ("femi", "Femi - Rich, reassuring"),
-        ("adaora", "Adaora - Warm, engaging"),
-        ("umar", "Umar - Calm, smooth"),
-        ("mary", "Mary - Energetic, youthful"),
-        ("nonso", "Nonso - Bold, resonant"),
-        ("remi", "Remi - Melodious, warm"),
-        ("adam", "Adam - Deep, clear"),
+        ("Idera", "Idera - Melodic, gentle"),
+        ("Emma", "Emma - Authoritative, deep"),
+        ("Zainab", "Zainab - Soothing, gentle"),
+        ("Osagie", "Osagie - Smooth, calm"),
+        ("Wura", "Wura - Young, sweet"),
+        ("Jude", "Jude - Warm, confident"),
+        ("Chinenye", "Chinenye - Engaging, warm"),
+        ("Tayo", "Tayo - Upbeat, energetic"),
+        ("Regina", "Regina - Mature, warm"),
+        ("Femi", "Femi - Rich, reassuring"),
+        ("Adaora", "Adaora - Warm, engaging"),
+        ("Umar", "Umar - Calm, smooth"),
+        ("Mary", "Mary - Energetic, youthful"),
+        ("Nonso", "Nonso - Bold, resonant"),
+        ("Remi", "Remi - Melodious, warm"),
+        ("Adam", "Adam - Deep, clear"),
     ]
 
     full_name = models.CharField(max_length=255, blank=True)
     voice_preference = models.CharField(
-        max_length=50, choices=VOICE_CHOICES, default="tayo"
+        max_length=50, choices=VOICE_CHOICES, default="Chinenye"
     )
     consent = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

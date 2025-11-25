@@ -41,7 +41,7 @@ class VoiceInputView(APIView):
             user = request.user if request.user.is_authenticated else None
             # Allow voice_preference override from request for anonymous users
             voice_preference = request.data.get("voice_preference") or (
-                user.voice_preference if user else "tayo"
+                user.voice_preference if user else "Chinenye"
             )
             print(f"✓ Voice preference: {voice_preference}")
 

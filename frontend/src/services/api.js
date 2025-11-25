@@ -34,7 +34,7 @@ export const getMe = async () => {
   return response.data;
 };
 
-export const sendVoiceMessage = async (audioBlob, voicePreference = 'tayo') => {
+export const sendVoiceMessage = async (audioBlob, voicePreference = 'Chinenye') => {
   const formData = new FormData();
   formData.append('audio', audioBlob, 'recording.webm');
   formData.append('voice_preference', voicePreference);
@@ -126,7 +126,7 @@ export const sendVoiceMessage = async (audioBlob, voicePreference = 'tayo') => {
   }
 };
 
-export const sendTextMessage = async (text, voicePreference = 'tayo') => {
+export const sendTextMessage = async (text, voicePreference = 'Chinenye') => {
   const formData = new FormData();
   formData.append('text', text);
   formData.append('voice_preference', voicePreference);
