@@ -39,11 +39,24 @@ class VoiceInputView(APIView):
                 print(f"✓ Text input: {text_input[:50]}...")
 
             user = request.user if request.user.is_authenticated else None
-            # Allow voice_preference override from request for anonymous users
-            voice_preference = request.data.get("voice_preference") or (
-                user.voice_preference if user else "Chinenye"
-            )
-            print(f"✓ Voice preference: {voice_preference}")
+            
+            # Get voice preference from request (allows user to change voice)
+            voice_preference = request.data.get("voice_preference")
+            
+            # For authenticated users, update their saved preference if provided
+            # Otherwise use their saved preference
+            if user:
+                if voice_preference and voice_preference != user.voice_preference:
+                    user.voice_preference = voice_preference
+                    user.save()
+                    print(f"✓ Updated user's voice preference to: {voice_preference}")
+                else:
+                    voice_preference = user.voice_preference
+                    print(f"✓ Using user's saved voice: {voice_preference}")
+            else:
+                # Anonymous users
+                voice_preference = voice_preference or "Chinenye"
+                print(f"✓ Using guest voice: {voice_preference}")
 
             # Step 1: Get transcript (either from STT or direct text)
             if audio_file:
@@ -56,10 +69,32 @@ class VoiceInputView(APIView):
                 transcript = text_input
                 print(f"✓ Text: {transcript}")
 
-            # Step 2: LLM - Get response
+            # Step 2: LLM - Get response with conversation history
             print("\n--- Step 2: LLM Processing (GPT-4) ---")
             llm_service = LLMService()
-            response_text = llm_service.get_response(transcript)
+            
+            # Build conversation history for context if user is authenticated
+            conversation_history = []
+            if user:
+                # Get or create session first to access history
+                session = (
+                    Session.objects.filter(user=user).order_by("-updated_at").first()
+                )
+                if session:
+                    # Get last 10 messages for context (5 exchanges)
+                    recent_messages = Message.objects.filter(
+                        session=session
+                    ).order_by("-created_at")[:10]
+                    
+                    # Reverse to chronological order and build history
+                    for msg in reversed(recent_messages):
+                        conversation_history.append({
+                            "role": msg.role,
+                            "content": msg.text
+                        })
+                    print(f"✓ Loaded {len(conversation_history)} messages for context")
+            
+            response_text = llm_service.get_response(transcript, conversation_history)
             print(f"✓ LLM Response: {response_text}")
 
             # Step 3: TTS - Convert response to audio
